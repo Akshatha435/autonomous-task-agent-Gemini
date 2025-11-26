@@ -1,33 +1,67 @@
-# 🚀 Modular Agent System — Planner → Decomposer → Action Agents → Combiner
+# 🚀 Modular Agent System with Google Gemini — Planner → Decomposer → Action Agents → Combiner
 
 ![Project Banner](screenshots/blog_screenshot.png)
 
 ## ⭐ Tagline
-A clean and modular agent pipeline built from an ER diagram — structured, scalable, and simple to extend.
+A complete modular agent pipeline enhanced with Google Gemini for reasoning, planning, and content generation.
 
 ## 📌 Project Description
-This project implements a complete multi-stage agent workflow. A single user input flows through a **Planner**, a **Task Decomposer**, multiple **Action Agents**, and finally a **Combiner** that produces a structured final output.
+This project implements a multi-stage agent architecture using an ER-diagram-based workflow.  
+A user request moves through:
 
-Built with clarity and modularity in mind, the system is ideal for learning agent architecture and workflow-based automation.
+1. **Planner** → Creates high-level task plan  
+2. **Task Decomposer** → Breaks plan into actionable steps  
+3. **Action Agents** → Each agent performs one clear atomic action  
+4. **Combiner** → Merges all agent outputs into a final structured response  
+5. **Gemini LLM** → Powers reasoning, text generation, and decision steps  
+
+This system demonstrates clean modular design + real LLM integration using the **Google Gemini API**.
 
 ---
 
-# 🧠 Architecture Overview
+# 🧠 Architecture Overview  
 ```
 User Input
+    ↓
+Gemini Model (for reasoning / planning)
     ↓
 Planner
     ↓
 Task Decomposer
     ↓
-Action Agents (Reader / Processor / Writer)
+Action Agents
     ↓
 Combiner
     ↓
 Final Output (JSON)
 ```
 
-This design keeps tasks organized, easy to debug, and highly expandable.
+Gemini enhances the system by:
+- Generating plans
+- Refining decomposed steps
+- Assisting action agents
+- Producing summaries or structured outputs
+
+---
+
+# 🤖 Model Used — Google Gemini  
+**Model:** `gemini-1.5-flash`  
+(You may also choose `gemini-1.5-pro` depending on complexity)
+
+Gemini is used for:
+- Task planning  
+- Reasoning  
+- Text generation  
+- Summaries  
+- Sample code generation  
+
+**Environment variable (never hardcode):**
+```
+GEMINI_API_KEY=your_api_key_here
+```
+
+Configured through `.env` (not uploaded).  
+Shared through `.env.example`.
 
 ---
 
@@ -38,81 +72,169 @@ project/
 ├─ decomposer.py
 ├─ combiner.py
 ├─ run_agent.py
+│
 ├─ agents/
 │  ├─ agent_reader.py
 │  ├─ agent_processor.py
 │  └─ agent_writer.py
+│
+├─ gemini/
+│  ├─ test_gemini_call.py
+│  ├─ agentic_agent_demo_gemini.py
+│  ├─ find_working_model.py
+│  └─ list_models.py
+│
 ├─ outputs/
 │  └─ final_output.json
+│
 ├─ screenshots/
 │  └─ blog_screenshot.png
+│
+├─ .env.example
+├─ .gitignore
 └─ README.md
 ```
 
 ---
 
-# 🚀 How to Run
+# ⚙️ Environment Setup
+Install dependencies:
 ```bash
-# clone and run
-git clone <your-repo-url>
-cd project
+pip install google-generativeai python-dotenv
+```
+
+Create `.env` (local only — do NOT upload):
+```
+GEMINI_API_KEY="your_real_api_key_here"
+```
+
+Create `.env.example` (to upload):
+```
+GEMINI_API_KEY=your_api_key_here
+```
+
+---
+
+# 🚀 Running the Project
+### 1) Run core agent pipeline:
+```bash
 python run_agent.py
 ```
 
-The final structured output will be generated at:
+Final output appears in:
 ```
 outputs/final_output.json
+```
+
+### 2) Test Gemini model:
+```bash
+python gemini/test_gemini_call.py
+```
+
+### 3) List all Gemini models:
+```bash
+python gemini/list_models.py
 ```
 
 ---
 
 # 🔍 Component Breakdown
 
-## 1️⃣ Planner
-- Receives the main user instruction and produces a sequence of subtasks (e.g. `["read_input","process_data","generate_summary"]`).
+## 1️⃣ Gemini Integration  
+Used for:
+- High-level reasoning  
+- Tasks planning  
+- Content generation  
+- Summaries  
+- Error explanation
 
-## 2️⃣ Task Decomposer
-- Breaks each Planner step into precise, executable actions (e.g. `process_data -> ["clean","analyze"]`).
+Example call:
+```python
+import google.generativeai as genai
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
-## 3️⃣ Action Agents
-- **Reader Agent**: loads/parses input  
-- **Processor Agent**: performs transformations/logic  
-- **Writer Agent**: formats results for output  
-Each agent returns a JSON-like dict: `{"step":"clean","result":"success"}`.
+model = genai.GenerativeModel("gemini-1.5-flash")
+response = model.generate_content("Create the plan for this task")
+```
 
-## 4️⃣ Combiner
-- Merges agent outputs, removes inconsistencies, and builds the final result:
+---
+
+## 2️⃣ Planner  
+Uses either:
+- Your Python logic, or  
+- Gemini-enhanced reasoning  
+
+Generates steps like:
+```
+["read_input", "process_data", "summarize"]
+```
+
+---
+
+## 3️⃣ Task Decomposer  
+Breaks each step into smaller actions:
+```
+"process_data" → ["clean", "analyze"]
+```
+
+---
+
+## 4️⃣ Action Agents
+### 🟦 Reader Agent  
+Loads or extracts input data.
+
+### 🟩 Processor Agent  
+Processes or transforms data.
+
+### 🟧 Writer Agent  
+Formats text or structured data.
+
+Each agent returns:
+```
+{"step":"clean","result":"success"}
+```
+
+---
+
+## 5️⃣ Combiner  
+Produces the final well-structured output:
 ```json
 {
   "status": "complete",
   "steps": [...],
-  "final_result": "summary text here"
+  "final_result": "summary text..."
 }
 ```
 
 ---
 
-# 📸 Screenshots
-Place your screenshot(s) in the `/screenshots` folder. An example image is already referenced above as:
-```
-screenshots/blog_screenshot.png
-```
-(Replace that file with your actual screenshot file. Keep the same filename or update the image link in this README.)
+## 📸 Screenshots
+
+### 🟦 Agent Goal Input
+![Goal Prompt](screenshots/02_agent_goal_prompt.png)
+
+### 🟩 Planner Output
+![Planner Output](screenshots/03_planner_output.png)
+
+### 🟧 Final Result JSON
+![Final Result](screenshots/01_result_output.png)
+
+
+# 🔒 Security  
+- `.env` is **never** uploaded.  
+- `.gitignore` blocks sensitive files.  
+- API keys must stay local only.  
+- `.env.example` safely shows required variables.
 
 ---
 
-# 🔒 Security
-- No sensitive credentials in the repo.  
-- Do not commit `.env` or API keys.  
-- Safe to upload publicly.
+# 🙏 Acknowledgements  
+Special thanks to **Imarticus Learning** and mentors for guidance and support throughout the development of this project.
 
 ---
 
-# 🙏 Acknowledgements
-Special thanks to **Imarticus Learning** and mentors for guidance.
-
----
-
-# 👤 Author
-**Acchu**  
+# 👤 Author  
+**Akshatha**  
 Data Science Intern — Imarticus Learning
+
+le Gemini — includes Planner, Decomposer, Action Agents, Combiner, and LLM reasoning. Clean, scalable, and production-ready.
