@@ -210,7 +210,6 @@ Produces the final well-structured output:
 
 ## 📸 Screenshots
 
-### 🟦 Agent Goal Input
 ![Goal Prompt](screenshots/02_agent_goal_prompt.png)
 
 ### 🟩 Planner Output
